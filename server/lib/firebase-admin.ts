@@ -1,4 +1,4 @@
-import { initializeApp, cert, getApp, getApps } from "firebase-admin/app";
+import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
@@ -9,25 +9,24 @@ let initialized = false;
 export function initializeFirebaseAdmin() {
   if (initialized) return;
 
-  try {
-    const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-    if (!serviceAccountKey) {
-      console.warn(
-        "FIREBASE_SERVICE_ACCOUNT_KEY not set. Admin operations disabled.",
-      );
-      return;
-    }
+  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
-    let app;
-    if (getApps().length > 0) {
-      app = getApp();
-    } else {
-      const serviceAccount = JSON.parse(serviceAccountKey);
-      app = initializeApp({
-        credential: cert(serviceAccount),
-        projectId: serviceAccount.project_id,
-      });
-    }
+  if (!serviceAccountKey) {
+    console.error(
+      "FIREBASE_SERVICE_ACCOUNT_KEY not set. Admin operations disabled.",
+    );
+    return;
+  }
+
+  try {
+    const serviceAccount = JSON.parse(serviceAccountKey);
+
+    const app = getApps().length > 0
+      ? getApps()[0]
+      : initializeApp({
+          credential: cert(serviceAccount),
+          projectId: serviceAccount.project_id,
+        });
 
     adminDb = getFirestore(app);
     adminAuth = getAuth(app);
