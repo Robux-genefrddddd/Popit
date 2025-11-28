@@ -1,0 +1,28 @@
+app = "fusion-app"
+primary_region = "cdg"
+
+[build]
+  builder = "heroku"
+
+[env]
+  LOG_LEVEL = "info"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 1000
+    soft_limit = 800
+
+[checks]
+  [checks.alive]
+    type = "http"
+    port = 8080
+    interval = 30000
+    timeout = 10000
+    path = "/api/ping"
