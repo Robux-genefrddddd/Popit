@@ -95,6 +95,8 @@ export default function AdminLogs() {
         }
 
         const data = await response.json();
+        if (!isMounted) return;
+
         if (data.success && Array.isArray(data.logs)) {
           const formattedLogs: AdminLog[] = data.logs
             .slice(0, 10)
@@ -107,17 +109,27 @@ export default function AdminLogs() {
               severity: getSeverityFromAction(log.action),
             }));
           setLogs(formattedLogs);
+        } else {
+          setError("Format de réponse invalide");
         }
       } catch (error) {
+        if (!isMounted) return;
+        const errorMsg = error instanceof Error ? error.message : "Erreur lors du chargement";
         console.error("Erreur lors du chargement des logs:", error);
+        setError(errorMsg);
+        setLogs([]);
       } finally {
+        if (!isMounted) return;
         setLoading(false);
       }
     };
 
     fetchLogs();
     const interval = setInterval(fetchLogs, 120000); // Refresh toutes les 2 minutes
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const getSeverityFromAction = (
