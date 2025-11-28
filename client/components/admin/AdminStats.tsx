@@ -121,10 +121,17 @@ export default function AdminStats() {
     );
   }
 
-  if (!stats) {
+  if (error || !stats) {
     return (
-      <div className="text-white/60 text-14px">
-        Impossible de charger les statistiques
+      <div className={`${dsClasses.card} p-6 bg-red-500/10 border-red-500/20`}>
+        <p className="text-red-300 text-14px font-medium mb-2">
+          Impossible de charger les statistiques
+        </p>
+        {error && (
+          <p className="text-red-300/70 text-13px">
+            {error}
+          </p>
+        )}
       </div>
     );
   }
