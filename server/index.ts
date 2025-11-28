@@ -56,6 +56,9 @@ import {
 } from "./middleware/security";
 
 export function createServer() {
+  // Initialize Firebase Admin SDK
+  initializeFirebaseAdmin();
+
   const app = express();
 
   // Trust proxy (for rate limiting to work correctly)
