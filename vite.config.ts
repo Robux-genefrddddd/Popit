@@ -60,7 +60,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    expressPlugin(),           // Express en dev
-    netlifyRedirectsPlugin(),  // Ajout automatique du fichier _redirects
+    expressPlugin(), // Express en dev
+    netlifyRedirectsPlugin(), // Ajout automatique du fichier _redirects
   ],
 }));
