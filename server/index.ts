@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { initializeFirebaseAdmin } from "./lib/firebase-admin";
 import { handleDemo } from "./routes/demo";
 import { handleGetIP, handleCheckVPN } from "./routes/ip-detection";
 import { handleActivateLicense } from "./routes/license";
