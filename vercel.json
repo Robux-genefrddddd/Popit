@@ -1,10 +1,5 @@
 {
-  "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
   "installCommand": "pnpm install",
-  "framework": "vite",
-  "env": {
-    "FIREBASE_SERVICE_ACCOUNT_KEY": "@firebase_service_account_key"
-  }
+  "outputDirectory": "dist"
 }
