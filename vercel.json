@@ -1,14 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npm run build:client && npm run build:server",
-  "outputDirectory": "dist/spa",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": "vite",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",
