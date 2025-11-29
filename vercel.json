@@ -4,10 +4,7 @@
   "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
-    }
-  ]
+  "env": {
+    "FIREBASE_SERVICE_ACCOUNT_KEY": "@firebase_service_account_key"
+  }
 }
