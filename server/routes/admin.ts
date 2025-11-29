@@ -314,7 +314,7 @@ export const handleGetSystemStats: RequestHandler = async (req, res) => {
 
     const stats = await FirebaseAdminService.getSystemStats();
 
-    return res.json(stats);
+    return res.json({ success: true, stats });
   } catch (error) {
     console.error("Get system stats error:", error);
     const message = error instanceof Error ? error.message : "Operation failed";
