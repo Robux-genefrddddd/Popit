@@ -38,11 +38,15 @@ export default function AdminAIConfigSection() {
       }
 
       const data = await response.json();
-      setConfig(data);
+      const configData = data.config || data;
+      setConfig(configData);
       setTempConfig({
-        ...data,
+        ...configData,
+        temperature: configData.temperature ?? 0.7,
+        maxTokens: configData.maxTokens ?? 2000,
+        model: configData.model ?? "gpt-4o-mini",
         systemPrompt:
-          data.systemPrompt ||
+          configData.systemPrompt ||
           "You are a helpful assistant. Always respond in the user's language.",
       });
     } catch (error) {
