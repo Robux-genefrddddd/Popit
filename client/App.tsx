@@ -167,8 +167,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <MaintenanceProvider>
-          <ThemeProvider>
+        <ThemeProvider>
+          <MaintenanceProvider>
             <TOSProvider>
               <Sonner />
               <BrowserRouter
@@ -180,11 +180,14 @@ const App = () => (
                 <AppRoutes />
               </BrowserRouter>
             </TOSProvider>
-          </ThemeProvider>
-        </MaintenanceProvider>
+          </MaintenanceProvider>
+        </ThemeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+const rootContainer = document.getElementById("root");
+if (rootContainer) {
+  createRoot(rootContainer).render(<App />);
+}

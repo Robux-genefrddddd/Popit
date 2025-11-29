@@ -64,6 +64,24 @@ export default function ActionConfirmModal({
 
   const msg = messages[type];
 
+  if (!msg) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-[#1a1a1a] border border-white/10 rounded-lg max-w-md w-full shadow-lg p-6">
+          <p className="text-red-400 mb-4">
+            Configuration invalide: action non reconnue
+          </p>
+          <button
+            onClick={onCancel}
+            className="w-full px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const colorClasses = {
     purple: "bg-purple-500/10 border-purple-500/20 text-purple-400",
     slate: "bg-slate-500/10 border-slate-500/20 text-slate-400",

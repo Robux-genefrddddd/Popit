@@ -440,13 +440,12 @@ export default function AdminUsersSection() {
       {/* Confirmation Modal */}
       {confirmAction && (
         <ActionConfirmModal
-          isOpen={!!confirmAction}
-          title={`Confirmer: ${confirmAction.type}`}
-          description={`Êtes-vous sûr de vouloir effectuer cette action sur ${confirmAction.email} ?`}
+          type={confirmAction.type}
+          email={confirmAction.email}
+          plan={confirmAction.plan}
           onConfirm={executeAction}
           onCancel={() => setConfirmAction(null)}
           isLoading={actionLoading !== null}
-          isDangerous={["ban", "delete"].includes(confirmAction.type)}
         />
       )}
     </div>

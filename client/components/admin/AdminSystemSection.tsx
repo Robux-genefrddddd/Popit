@@ -68,7 +68,24 @@ export default function AdminSystemSection() {
         throw new Error(data.message || data.error || "Erreur serveur");
       }
 
-      setStats(data);
+      const statsData = data.stats || data;
+
+      const defaultStats: SystemStats = {
+        totalUsers: statsData.totalUsers || 0,
+        adminUsers: statsData.totalAdmins || 0,
+        bannedUsers: statsData.bannedUsers || 0,
+        freeUsers: statsData.freeUsers || 0,
+        proUsers: statsData.proUsers || 0,
+        totalMessages: statsData.totalMessages || 0,
+        avgMessagesPerUser: statsData.avgMessagesPerUser || 0,
+        totalLicenses: statsData.totalLicenses || 0,
+        usedLicenses: statsData.usedLicenses || 0,
+        activeLicenses: statsData.activeLicenses || 0,
+        activityLogsCount: statsData.activityLogsCount || 0,
+        activityByDay: statsData.activityByDay || {},
+      };
+
+      setStats(defaultStats);
       setError(null);
 
       const lastSevenDays: any[] = [];
@@ -76,7 +93,7 @@ export default function AdminSystemSection() {
         const date = new Date();
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split("T")[0];
-        const activity = data.activityByDay?.[dateStr] || 0;
+        const activity = defaultStats.activityByDay?.[dateStr] || 0;
 
         lastSevenDays.push({
           date: date.toLocaleDateString("fr-FR", {
@@ -89,9 +106,9 @@ export default function AdminSystemSection() {
       setChartData(lastSevenDays);
 
       setPlanData([
-        { name: "Free", value: data.freeUsers, color: "#64748b" },
-        { name: "Premium", value: data.proUsers, color: "#3b82f6" },
-        { name: "Admin", value: data.adminUsers, color: "#8b5cf6" },
+        { name: "Free", value: defaultStats.freeUsers, color: "#64748b" },
+        { name: "Premium", value: defaultStats.proUsers, color: "#3b82f6" },
+        { name: "Admin", value: defaultStats.adminUsers, color: "#8b5cf6" },
       ]);
     } catch (error) {
       const errorMsg =

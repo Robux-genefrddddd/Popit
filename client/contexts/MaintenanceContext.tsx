@@ -37,9 +37,13 @@ export function MaintenanceProvider({
 
   useEffect(() => {
     setLoading(true);
+    let isMounted = true;
+
     const unsubscribe = onSnapshot(
       doc(db, "settings", "maintenance"),
       (snapshot) => {
+        if (!isMounted) return;
+
         if (snapshot.exists()) {
           const data = snapshot.data() as any;
           setMaintenance({
@@ -66,10 +70,12 @@ export function MaintenanceProvider({
         setError(null);
         setLoading(false);
       },
-      (err) => {
+      (err: any) => {
+        if (!isMounted) return;
+
         console.error("Error listening to maintenance status:", err);
-        setError("Erreur lors de la lecture du statut de maintenance");
-        setLoading(false);
+
+        // Default to no maintenance if Firestore is unavailable
         setMaintenance({
           global: false,
           partial: false,
@@ -78,10 +84,15 @@ export function MaintenanceProvider({
           license: false,
           message: "",
         });
+        setError(null); // Don't show error to user, just use defaults
+        setLoading(false);
       },
     );
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   return (

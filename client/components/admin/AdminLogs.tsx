@@ -72,11 +72,15 @@ function getActionLabel(action: string, data?: Record<string, any>): string {
 export default function AdminLogs() {
   const [logs, setLogs] = useState<AdminLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchLogs = async () => {
       try {
         setLoading(true);
+        setError(null);
         const currentUser = auth.currentUser;
         if (!currentUser) throw new Error("Non authentifié");
 
@@ -85,9 +89,16 @@ export default function AdminLogs() {
           headers: { Authorization: `Bearer ${idToken}` },
         });
 
-        if (!response.ok) throw new Error("Erreur lors du chargement");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || `Erreur serveur: ${response.status}`,
+          );
+        }
 
         const data = await response.json();
+        if (!isMounted) return;
+
         if (data.success && Array.isArray(data.logs)) {
           const formattedLogs: AdminLog[] = data.logs
             .slice(0, 10)
@@ -100,17 +111,28 @@ export default function AdminLogs() {
               severity: getSeverityFromAction(log.action),
             }));
           setLogs(formattedLogs);
+        } else {
+          setError("Format de réponse invalide");
         }
       } catch (error) {
+        if (!isMounted) return;
+        const errorMsg =
+          error instanceof Error ? error.message : "Erreur lors du chargement";
         console.error("Erreur lors du chargement des logs:", error);
+        setError(errorMsg);
+        setLogs([]);
       } finally {
+        if (!isMounted) return;
         setLoading(false);
       }
     };
 
     fetchLogs();
     const interval = setInterval(fetchLogs, 120000); // Refresh toutes les 2 minutes
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const getSeverityFromAction = (
@@ -144,9 +166,18 @@ export default function AdminLogs() {
         <p className="text-13px text-white/60">Dernières actions du système</p>
       </div>
 
+      {/* Error State */}
+      {error && (
+        <div
+          className={`${dsClasses.card} p-4 bg-red-500/10 border-red-500/20 text-red-300 text-13px`}
+        >
+          {error}
+        </div>
+      )}
+
       {/* Logs list */}
       <div className="space-y-2">
-        {logs.length === 0 ? (
+        {logs.length === 0 && !error ? (
           <div
             className={`${dsClasses.card} p-4 text-center text-white/60 text-13px`}
           >

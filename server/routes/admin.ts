@@ -271,12 +271,15 @@ export const handleDeleteLicense: RequestHandler = async (req, res) => {
 // Get AI config
 export const handleGetAIConfig: RequestHandler = async (req, res) => {
   try {
+    const idToken = extractIdToken(req.headers.authorization);
+    await FirebaseAdminService.verifyAdmin(idToken);
+
     const config = await FirebaseAdminService.getAIConfig();
-    return res.json(config);
+    return res.json({ success: true, config });
   } catch (error) {
     console.error("Get AI config error:", error);
     const message = error instanceof Error ? error.message : "Operation failed";
-    return res.status(500).json({ success: false, message });
+    return res.status(401).json({ success: false, message });
   }
 };
 
@@ -314,7 +317,7 @@ export const handleGetSystemStats: RequestHandler = async (req, res) => {
 
     const stats = await FirebaseAdminService.getSystemStats();
 
-    return res.json(stats);
+    return res.json({ success: true, stats });
   } catch (error) {
     console.error("Get system stats error:", error);
     const message = error instanceof Error ? error.message : "Operation failed";

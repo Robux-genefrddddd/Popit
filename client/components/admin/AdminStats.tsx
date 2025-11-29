@@ -63,11 +63,15 @@ function StatCard({ title, value, change, trend, lastUpdated }: StatCardProps) {
 export default function AdminStats() {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchStats = async () => {
       try {
         setLoading(true);
+        setError(null);
         const currentUser = auth.currentUser;
         if (!currentUser) throw new Error("Non authentifié");
 
@@ -76,22 +80,40 @@ export default function AdminStats() {
           headers: { Authorization: `Bearer ${idToken}` },
         });
 
-        if (!response.ok) throw new Error("Erreur lors du chargement");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || `Erreur serveur: ${response.status}`,
+          );
+        }
 
         const data = await response.json();
-        if (data.success) {
+        if (!isMounted) return;
+
+        if (data.success && data.stats) {
           setStats(data.stats);
+        } else {
+          setError("Format de réponse invalide");
         }
       } catch (error) {
+        if (!isMounted) return;
+        const errorMsg =
+          error instanceof Error ? error.message : "Erreur lors du chargement";
         console.error("Erreur lors du chargement des stats:", error);
+        setError(errorMsg);
+        setStats(null);
       } finally {
+        if (!isMounted) return;
         setLoading(false);
       }
     };
 
     fetchStats();
     const interval = setInterval(fetchStats, 60000); // Refresh toutes les minutes
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   if (loading) {
@@ -102,10 +124,13 @@ export default function AdminStats() {
     );
   }
 
-  if (!stats) {
+  if (error || !stats) {
     return (
-      <div className="text-white/60 text-14px">
-        Impossible de charger les statistiques
+      <div className={`${dsClasses.card} p-6 bg-red-500/10 border-red-500/20`}>
+        <p className="text-red-300 text-14px font-medium mb-2">
+          Impossible de charger les statistiques
+        </p>
+        {error && <p className="text-red-300/70 text-13px">{error}</p>}
       </div>
     );
   }
