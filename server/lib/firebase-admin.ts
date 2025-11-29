@@ -8,7 +8,7 @@ function getServiceAccount() {
   if (!serviceAccountKey) {
     throw new Error(
       "FIREBASE_SERVICE_ACCOUNT_KEY environment variable not set. " +
-      "Please set it to your Firebase service account JSON."
+        "Please set it to your Firebase service account JSON.",
     );
   }
 
@@ -22,7 +22,7 @@ function getServiceAccount() {
       !serviceAccount.private_key
     ) {
       throw new Error(
-        "Invalid FIREBASE_SERVICE_ACCOUNT_KEY: missing required fields (type, project_id, private_key)"
+        "Invalid FIREBASE_SERVICE_ACCOUNT_KEY: missing required fields (type, project_id, private_key)",
       );
     }
 
@@ -36,7 +36,7 @@ function getServiceAccount() {
     }
     throw new Error(
       "Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY as JSON. " +
-      "Make sure it's a valid JSON string from your Firebase service account."
+        "Make sure it's a valid JSON string from your Firebase service account.",
     );
   }
 }
@@ -354,7 +354,10 @@ export class FirebaseAdminService {
   static async invalidateLicense(adminUid: string, licenseKey: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    const licenseDoc = await adminDb.collection("licenses").doc(licenseKey).get();
+    const licenseDoc = await adminDb
+      .collection("licenses")
+      .doc(licenseKey)
+      .get();
     if (!licenseDoc.exists) {
       throw new Error("License not found");
     }
@@ -371,7 +374,10 @@ export class FirebaseAdminService {
   static async deleteLicense(adminUid: string, licenseKey: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    const licenseDoc = await adminDb.collection("licenses").doc(licenseKey).get();
+    const licenseDoc = await adminDb
+      .collection("licenses")
+      .doc(licenseKey)
+      .get();
     if (!licenseDoc.exists) {
       throw new Error("License not found");
     }
@@ -555,15 +561,18 @@ export class FirebaseAdminService {
   static async enableGlobalMaintenance(adminUid: string, message?: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        isGlobalMaintenance: true,
-        message: message || "System maintenance in progress",
-        enabledAt: Timestamp.now(),
-        enabledBy: adminUid,
-      },
-      { merge: true },
-    );
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          isGlobalMaintenance: true,
+          message: message || "System maintenance in progress",
+          enabledAt: Timestamp.now(),
+          enabledBy: adminUid,
+        },
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "ENABLE_GLOBAL_MAINTENANCE", {
       message,
@@ -590,15 +599,18 @@ export class FirebaseAdminService {
   ) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        partialServices: services,
-        message: message || "Some services are under maintenance",
-        enabledAt: Timestamp.now(),
-        enabledBy: adminUid,
-      },
-      { merge: true },
-    );
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          partialServices: services,
+          message: message || "Some services are under maintenance",
+          enabledAt: Timestamp.now(),
+          enabledBy: adminUid,
+        },
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "ENABLE_PARTIAL_MAINTENANCE", {
       services,
@@ -622,17 +634,20 @@ export class FirebaseAdminService {
   static async enableIAMaintenance(adminUid: string, message?: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        iaService: {
-          enabled: false,
-          message: message || "AI service is under maintenance",
-          enabledAt: Timestamp.now(),
-          enabledBy: adminUid,
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          iaService: {
+            enabled: false,
+            message: message || "AI service is under maintenance",
+            enabledAt: Timestamp.now(),
+            enabledBy: adminUid,
+          },
         },
-      },
-      { merge: true },
-    );
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "ENABLE_IA_MAINTENANCE", {
       message,
@@ -642,14 +657,17 @@ export class FirebaseAdminService {
   static async disableIAMaintenance(adminUid: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        iaService: {
-          enabled: true,
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          iaService: {
+            enabled: true,
+          },
         },
-      },
-      { merge: true },
-    );
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "DISABLE_IA_MAINTENANCE", {});
   }
@@ -657,17 +675,20 @@ export class FirebaseAdminService {
   static async enableLicenseMaintenance(adminUid: string, message?: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        licenseService: {
-          enabled: false,
-          message: message || "License service is under maintenance",
-          enabledAt: Timestamp.now(),
-          enabledBy: adminUid,
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          licenseService: {
+            enabled: false,
+            message: message || "License service is under maintenance",
+            enabledAt: Timestamp.now(),
+            enabledBy: adminUid,
+          },
         },
-      },
-      { merge: true },
-    );
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "ENABLE_LICENSE_MAINTENANCE", {
       message,
@@ -677,14 +698,17 @@ export class FirebaseAdminService {
   static async disableLicenseMaintenance(adminUid: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        licenseService: {
-          enabled: true,
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          licenseService: {
+            enabled: true,
+          },
         },
-      },
-      { merge: true },
-    );
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "DISABLE_LICENSE_MAINTENANCE", {});
   }
@@ -696,17 +720,20 @@ export class FirebaseAdminService {
   ) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        plannedMaintenance: {
-          enabled: true,
-          scheduledAt: plannedTime,
-          message: message || "Planned maintenance scheduled",
-          scheduledBy: adminUid,
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          plannedMaintenance: {
+            enabled: true,
+            scheduledAt: plannedTime,
+            message: message || "Planned maintenance scheduled",
+            scheduledBy: adminUid,
+          },
         },
-      },
-      { merge: true },
-    );
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "ENABLE_PLANNED_MAINTENANCE", {
       plannedTime,
@@ -717,14 +744,17 @@ export class FirebaseAdminService {
   static async disablePlannedMaintenance(adminUid: string) {
     if (!adminDb) throw new Error("Database not initialized");
 
-    await adminDb.collection("config").doc("maintenance").set(
-      {
-        plannedMaintenance: {
-          enabled: false,
+    await adminDb
+      .collection("config")
+      .doc("maintenance")
+      .set(
+        {
+          plannedMaintenance: {
+            enabled: false,
+          },
         },
-      },
-      { merge: true },
-    );
+        { merge: true },
+      );
 
     await this.logAdminAction(adminUid, "DISABLE_PLANNED_MAINTENANCE", {});
   }
