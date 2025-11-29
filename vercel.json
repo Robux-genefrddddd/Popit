@@ -5,7 +5,7 @@
   "installCommand": "pnpm install",
   "framework": "vite",
   "functions": {
-    "api/**/*.ts": {
+    "api/**/*.js": {
       "runtime": "nodejs18.x"
     }
   },
